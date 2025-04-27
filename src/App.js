@@ -48,6 +48,19 @@ export default function App() {
     setShowAddFriend(false);
   }
 
+  function handleSplitAmt(splitAmt) {
+   // console.log(splitAmt);
+    setFriendList((friends) =>
+      friends.map((friend) => {
+        if (friend.id === selectedFriend.id) {
+          friend = { ...friend, balance: friend.balance + splitAmt };
+        }
+        return friend;
+      })
+    );
+    setSelectedFriend(null);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
@@ -63,7 +76,9 @@ export default function App() {
           {showAddFriend ? "Close" : "Add Friend"}
         </Button>
       </div>
-      {selectedFriend && <SplitBill friend={selectedFriend} />}
+      {selectedFriend && (
+        <SplitBill friend={selectedFriend} splitBillAmt={handleSplitAmt} />
+      )}
     </div>
   );
 }
@@ -154,14 +169,35 @@ function AddFriendToList({ onAddFriend }) {
   );
 }
 
-function SplitBill({ friend }) {
+function SplitBill({ friend, splitBillAmt }) {
   const [bill, setBill] = useState("");
   const [myExpense, setMyExpense] = useState("");
   const friendExpense = myExpense ? bill - myExpense : "";
   const [whoIsPaying, setWhoIsPaying] = useState("user");
 
+  function handleBillSplit(e) {
+    e.preventDefault();
+    if (!bill || !myExpense) {
+      alert("Please fill all the fields");
+      return;
+    }
+    if (Number(myExpense) > Number(bill)) {
+      alert("Your expense cannot be greater than the bill");
+      return;
+    }
+    if (Number(myExpense) < 0) {
+      alert("Your expense cannot be negative");
+      return;
+    }
+    if (Number(bill) < 0) {
+      alert("Bill cannot be negative");
+      return;
+    }
+    splitBillAmt(whoIsPaying === "user" ? friendExpense : -myExpense);
+  }
+
   return (
-    <form className="form-split-bill">
+    <form className="form-split-bill" onSubmit={handleBillSplit}>
       <h2>Split bill with {friend.name}</h2>
 
       <label htmlFor="bill">Bill value</label>
