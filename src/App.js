@@ -49,7 +49,7 @@ export default function App() {
   }
 
   function handleSplitAmt(splitAmt) {
-   // console.log(splitAmt);
+    // console.log(splitAmt);
     setFriendList((friends) =>
       friends.map((friend) => {
         if (friend.id === selectedFriend.id) {
@@ -77,7 +77,11 @@ export default function App() {
         </Button>
       </div>
       {selectedFriend && (
-        <SplitBill friend={selectedFriend} splitBillAmt={handleSplitAmt} />
+        <SplitBill
+          friend={selectedFriend}
+          key={selectedFriend.id}
+          splitBillAmt={handleSplitAmt}
+        />
       )}
     </div>
   );
